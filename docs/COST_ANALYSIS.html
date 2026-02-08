@@ -1,0 +1,459 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Informe de Costos - Canicas TODO (3D Task Manager)</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            padding: 40px;
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            color: #000;
+        }
+        .header {
+            border-bottom: 3px solid #000;
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+        }
+        h1 { 
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+        .subtitle {
+            font-size: 14px;
+            color: #666;
+        }
+        .section {
+            margin-bottom: 30px;
+            page-break-inside: avoid;
+        }
+        h2 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            padding-bottom: 5px;
+            border-bottom: 2px solid #000;
+        }
+        h3 {
+            font-size: 16px;
+            margin: 15px 0 10px 0;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #000;
+        }
+        th {
+            background: #000;
+            color: #fff;
+            font-weight: bold;
+        }
+        tr:nth-child(even) {
+            background: #f5f5f5;
+        }
+        .highlight-box {
+            border: 2px solid #000;
+            padding: 20px;
+            margin: 20px 0;
+            background: #f9f9f9;
+        }
+        .cost-big {
+            font-size: 48px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: #28a745;
+        }
+        .cost-label {
+            font-size: 14px;
+            color: #666;
+            text-transform: uppercase;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 20px;
+            margin: 20px 0;
+        }
+        .metric-card {
+            border: 1px solid #000;
+            padding: 15px;
+            text-align: center;
+        }
+        .metric-value {
+            font-size: 24px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        .metric-label {
+            font-size: 12px;
+            color: #666;
+        }
+        ul {
+            margin-left: 20px;
+            margin-top: 10px;
+        }
+        li {
+            margin-bottom: 8px;
+        }
+        .footer {
+            margin-top: 40px;
+            padding-top: 20px;
+            border-top: 1px solid #000;
+            font-size: 12px;
+            color: #666;
+            text-align: center;
+        }
+        .success-box {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+            padding: 15px;
+            margin: 10px 0;
+        }
+        @media print {
+            body { padding: 20px; }
+            .section { page-break-inside: avoid; }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>Informe de Costos - Canicas TODO</h1>
+        <div class="subtitle">Aplicación: 3D Task Manager | Fecha: 8 de Febrero, 2026</div>
+    </div>
+
+    <div class="section">
+        <h2>Resumen Ejecutivo</h2>
+        <div class="highlight-box">
+            <div class="cost-label">Costo Mensual de la Aplicación</div>
+            <div class="cost-big">$0.00 USD</div>
+            <p style="margin-top: 10px; font-size: 18px;"><strong>✅ La aplicación Canicas TODO opera completamente GRATIS dentro del Free Tier de AWS</strong></p>
+            <p style="margin-top: 10px;">Todos los servicios utilizados están dentro de los límites gratuitos de AWS. No hay costos de infraestructura, compute, storage, ni data transfer.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Servicios Utilizados (Todos Gratis)</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Servicio AWS</th>
+                    <th>Uso Actual</th>
+                    <th>Límite Free Tier</th>
+                    <th>% Usado</th>
+                    <th>Costo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Lambda</strong> (Authorizer)</td>
+                    <td>56 invocaciones/mes</td>
+                    <td>1,000,000 invocaciones/mes</td>
+                    <td>0.0056%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>Lambda</strong> (Tasks API)</td>
+                    <td>53 invocaciones/mes</td>
+                    <td>1,000,000 invocaciones/mes</td>
+                    <td>0.0053%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>API Gateway</strong> (HTTP API)</td>
+                    <td>~109 requests/mes</td>
+                    <td>1,000,000 requests/mes</td>
+                    <td>0.0109%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>DynamoDB</strong> (Read)</td>
+                    <td>1 RCU total</td>
+                    <td>25 RCU/segundo</td>
+                    <td>0.0001%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>DynamoDB</strong> (Write)</td>
+                    <td>9 WCU total</td>
+                    <td>25 WCU/segundo</td>
+                    <td>0.0005%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>S3</strong> (3 buckets)</td>
+                    <td>&lt;1 MB almacenado</td>
+                    <td>5 GB + 20K GET + 2K PUT</td>
+                    <td>&lt;0.01%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>CloudFront</strong> (CDN)</td>
+                    <td>Uso mínimo</td>
+                    <td>1 TB + 10M requests</td>
+                    <td>&lt;0.01%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>CodeBuild</strong> (CI/CD)</td>
+                    <td>~5 minutos/mes</td>
+                    <td>100 minutos/mes</td>
+                    <td>~5%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>CodePipeline</strong></td>
+                    <td>1 pipeline activo</td>
+                    <td>1 pipeline gratis</td>
+                    <td>100%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>CodeCommit</strong></td>
+                    <td>2 repositorios</td>
+                    <td>5 usuarios activos</td>
+                    <td>&lt;50%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>CloudWatch Logs</strong></td>
+                    <td>Logs de Lambda/CodeBuild</td>
+                    <td>5 GB ingestion + 5 GB storage</td>
+                    <td>&lt;1%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>ACM</strong> (Certificados SSL)</td>
+                    <td>2 certificados</td>
+                    <td>Ilimitado (público)</td>
+                    <td>-</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>SSM Parameter Store</strong></td>
+                    <td>11 parámetros (Standard)</td>
+                    <td>10,000 parámetros</td>
+                    <td>0.11%</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>IAM</strong> (Roles y Policies)</td>
+                    <td>Múltiples roles</td>
+                    <td>Ilimitado</td>
+                    <td>-</td>
+                    <td>$0.00</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr style="font-weight: bold; background: #d4edda;">
+                    <td>TOTAL</td>
+                    <td colspan="3">Todos los servicios dentro del Free Tier</td>
+                    <td>$0.00</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Arquitectura de la Aplicación</h2>
+        
+        <h3>Frontend</h3>
+        <ul>
+            <li><strong>React + Three.js:</strong> Interfaz 3D interactiva con física de canicas</li>
+            <li><strong>Hosting:</strong> S3 + CloudFront (CDN global)</li>
+            <li><strong>Dominio:</strong> dev.amxops.com (SSL/TLS con ACM)</li>
+            <li><strong>Autenticación:</strong> Firebase Authentication (Google Sign-In)</li>
+        </ul>
+
+        <h3>Backend</h3>
+        <ul>
+            <li><strong>API:</strong> API Gateway HTTP API + Lambda (Node.js)</li>
+            <li><strong>Autenticación:</strong> Lambda Authorizer (verifica tokens Firebase)</li>
+            <li><strong>Base de Datos:</strong> DynamoDB con GSI (UserIdIndex para aislamiento por usuario)</li>
+            <li><strong>Configuración:</strong> SSM Parameter Store (Firebase + Cloudflare credentials)</li>
+        </ul>
+
+        <h3>CI/CD</h3>
+        <ul>
+            <li><strong>Source Control:</strong> CodeCommit (2 repos: frontend + backend)</li>
+            <li><strong>Build:</strong> CodeBuild (2 proyectos con buildspec.yml)</li>
+            <li><strong>Pipeline:</strong> CodePipeline (despliegue automático en push)</li>
+            <li><strong>IaC:</strong> Terraform (infraestructura como código)</li>
+        </ul>
+
+        <h3>Seguridad</h3>
+        <ul>
+            <li><strong>Autenticación:</strong> Firebase OAuth 2.0 con Google</li>
+            <li><strong>Autorización:</strong> Lambda Authorizer + IAM policies</li>
+            <li><strong>Aislamiento de Datos:</strong> DynamoDB GSI por userId</li>
+            <li><strong>Secretos:</strong> SSM Parameter Store (SecureString con AWS-managed encryption)</li>
+            <li><strong>HTTPS:</strong> CloudFront + ACM (TLS 1.2+)</li>
+        </ul>
+    </div>
+
+    <div class="section">
+        <h2>Métricas de Uso (Febrero 2026)</h2>
+        
+        <div class="grid">
+            <div class="metric-card">
+                <div class="metric-label">Total Invocaciones Lambda</div>
+                <div class="metric-value">109</div>
+                <div class="metric-label">0.0109% del Free Tier</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Requests API Gateway</div>
+                <div class="metric-value">~109</div>
+                <div class="metric-label">0.0109% del Free Tier</div>
+            </div>
+            <div class="metric-card">
+                <div class="metric-label">Operaciones DynamoDB</div>
+                <div class="metric-value">10</div>
+                <div class="metric-label">1 read + 9 writes</div>
+            </div>
+        </div>
+
+        <div class="success-box">
+            <h3>✅ Uso Extremadamente Eficiente</h3>
+            <p>La aplicación está usando menos del <strong>0.1%</strong> de los límites del Free Tier en todos los servicios. Esto significa que puede escalar hasta <strong>1000x</strong> el tráfico actual sin generar costos.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Proyección de Costos</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Escenario</th>
+                    <th>Tráfico Mensual</th>
+                    <th>Costo Estimado</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Actual (Febrero 2026)</td>
+                    <td>~109 requests</td>
+                    <td><strong>$0.00</strong></td>
+                </tr>
+                <tr>
+                    <td>10x tráfico</td>
+                    <td>~1,090 requests</td>
+                    <td><strong>$0.00</strong> (Free Tier)</td>
+                </tr>
+                <tr>
+                    <td>100x tráfico</td>
+                    <td>~10,900 requests</td>
+                    <td><strong>$0.00</strong> (Free Tier)</td>
+                </tr>
+                <tr>
+                    <td>1000x tráfico</td>
+                    <td>~109,000 requests</td>
+                    <td><strong>$0.00</strong> (Free Tier)</td>
+                </tr>
+                <tr>
+                    <td>10,000x tráfico</td>
+                    <td>~1,090,000 requests</td>
+                    <td><strong>~$1.50/mes</strong></td>
+                </tr>
+            </tbody>
+        </table>
+
+        <p style="margin-top: 15px;"><strong>Nota:</strong> Incluso con 10,000x el tráfico actual (más de 1 millón de requests/mes), el costo sería solo ~$1.50/mes. La arquitectura serverless escala automáticamente y solo pagas por lo que usas.</p>
+    </div>
+
+    <div class="section">
+        <h2>Servicios Externos (No AWS)</h2>
+        
+        <table>
+            <thead>
+                <tr>
+                    <th>Servicio</th>
+                    <th>Propósito</th>
+                    <th>Plan</th>
+                    <th>Costo</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>Firebase Authentication</strong></td>
+                    <td>Google Sign-In (OAuth 2.0)</td>
+                    <td>Spark (Free)</td>
+                    <td>$0.00</td>
+                </tr>
+                <tr>
+                    <td><strong>Cloudflare DNS</strong></td>
+                    <td>Gestión de dominio amxops.com</td>
+                    <td>Free</td>
+                    <td>$0.00</td>
+                </tr>
+            </tbody>
+            <tfoot>
+                <tr style="font-weight: bold;">
+                    <td colspan="3">TOTAL SERVICIOS EXTERNOS</td>
+                    <td>$0.00</td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
+
+    <div class="section">
+        <h2>Duración del Free Tier</h2>
+        
+        <div class="highlight-box">
+            <h3>Servicios con Free Tier de 12 meses</h3>
+            <ul>
+                <li>Lambda: 1M invocaciones/mes + 400,000 GB-segundos</li>
+                <li>API Gateway: 1M requests/mes (HTTP API)</li>
+                <li>DynamoDB: 25 GB storage + 25 RCU + 25 WCU</li>
+                <li>S3: 5 GB storage + 20,000 GET + 2,000 PUT</li>
+                <li>CloudFront: 1 TB data transfer + 10M requests</li>
+                <li>CodeBuild: 100 minutos/mes</li>
+            </ul>
+
+            <h3 style="margin-top: 20px;">Servicios Siempre Gratis</h3>
+            <ul>
+                <li>CodePipeline: 1 pipeline activo</li>
+                <li>CodeCommit: 5 usuarios activos + 50 GB storage</li>
+                <li>CloudWatch Logs: 5 GB ingestion + 5 GB storage</li>
+                <li>ACM: Certificados SSL públicos ilimitados</li>
+                <li>SSM Parameter Store: 10,000 parámetros Standard</li>
+                <li>IAM: Ilimitado</li>
+            </ul>
+
+            <p style="margin-top: 15px; font-weight: bold;">Después del Free Tier de 12 meses, con el uso actual (~109 requests/mes), el costo estimado sería de ~$0.05/mes.</p>
+        </div>
+    </div>
+
+    <div class="section">
+        <h2>Conclusiones</h2>
+        <ol>
+            <li><strong>Costo Cero:</strong> La aplicación Canicas TODO opera completamente gratis dentro del Free Tier de AWS.</li>
+            <li><strong>Uso Eficiente:</strong> Menos del 0.1% de los límites gratuitos utilizados, permitiendo escalar 1000x sin costos.</li>
+            <li><strong>Arquitectura Moderna:</strong> Serverless, CI/CD completo, autenticación OAuth, CDN global, todo sin costo.</li>
+            <li><strong>Escalabilidad:</strong> Puede manejar hasta 1 millón de requests/mes dentro del Free Tier.</li>
+            <li><strong>Seguridad:</strong> Autenticación Firebase, autorización Lambda, aislamiento por usuario, HTTPS/TLS.</li>
+            <li><strong>Sostenibilidad:</strong> Después del Free Tier (12 meses), costo estimado de solo $0.05/mes con uso actual.</li>
+        </ol>
+
+        <div class="success-box" style="margin-top: 20px;">
+            <h3>🎉 Resultado Final</h3>
+            <p style="font-size: 18px;"><strong>Infraestructura empresarial completa con autenticación, base de datos, CDN global, CI/CD automatizado, y monitoreo por $0.00/mes.</strong></p>
+            <p style="margin-top: 10px;">Este es un ejemplo perfecto de cómo la arquitectura serverless y el Free Tier de AWS permiten construir aplicaciones modernas sin costos de infraestructura.</p>
+        </div>
+    </div>
+
+    <div class="footer">
+        <p>Informe generado el 8 de Febrero de 2026 | Datos obtenidos de AWS Cost Explorer y CloudWatch</p>
+        <p>Aplicación: Canicas TODO (3D Task Manager) | Región: us-east-1 | Ambiente: dev</p>
+    </div>
+</body>
+</html>

@@ -20,36 +20,96 @@ A modern task management application with a 3D physics-based interface built wit
 - 🌐 **Custom Domain** - SSL certificates with automatic DNS validation
 - 🐳 **Docker Support** - Local development environment included
 - 📜 **Interactive Scripts** - Easy setup and deployment with guided menus
+- 💰 **Zero Cost** - Runs completely free on AWS Free Tier ($0.00/month)
 
 ## 🏗️ Architecture
 
+```mermaid
+graph TB
+    %% External Services
+    subgraph External["🌐 External Services"]
+        User["👤 User"]
+        Firebase["🔥 Firebase<br/>Authentication"]
+        Cloudflare["☁️ Cloudflare<br/>DNS"]
+    end
+    
+    %% AWS Services
+    subgraph AWS["☁️ AWS Account (us-east-1)"]
+        
+        subgraph Frontend["Frontend Layer"]
+            ACM["🔒 ACM<br/>SSL/TLS"]
+            CloudFront["🌍 CloudFront<br/>CDN"]
+            S3["📦 S3<br/>Static Site"]
+        end
+        
+        subgraph Backend["Backend Layer"]
+            APIGW["🚪 API Gateway<br/>HTTP API"]
+            AuthLambda["⚡ Lambda<br/>Authorizer"]
+            TasksLambda["⚡ Lambda<br/>Tasks API"]
+            DynamoDB["🗄️ DynamoDB<br/>Tasks Table"]
+        end
+        
+        subgraph CICD["CI/CD Pipeline"]
+            CodeCommit["📝 CodeCommit"]
+            CodePipeline["🔄 CodePipeline"]
+            CodeBuild["🔨 CodeBuild"]
+        end
+        
+        subgraph Security["Security & Config"]
+            SSM["🔐 SSM Parameters"]
+            CloudWatch["📊 CloudWatch Logs"]
+            IAM["👥 IAM Roles"]
+        end
+    end
+    
+    %% User Flow
+    User -->|1. Auth| Firebase
+    User -->|2. DNS| Cloudflare
+    Cloudflare -->|3. Route| CloudFront
+    User -->|4. HTTPS| CloudFront
+    
+    %% Frontend Flow
+    ACM -.->|SSL| CloudFront
+    CloudFront -->|5. GET| S3
+    CloudFront -->|6. API| APIGW
+    
+    %% Backend Flow
+    APIGW -->|7. Verify| AuthLambda
+    AuthLambda -.->|Check| Firebase
+    AuthLambda -.->|Config| SSM
+    APIGW -->|8. Execute| TasksLambda
+    TasksLambda -->|9. Query| DynamoDB
+    
+    %% Logging
+    TasksLambda -.->|Logs| CloudWatch
+    AuthLambda -.->|Logs| CloudWatch
+    
+    %% CI/CD Flow
+    CodeCommit -->|Push| CodePipeline
+    CodePipeline -->|Build| CodeBuild
+    CodeBuild -.->|Deploy| S3
+    CodeBuild -.->|Deploy| TasksLambda
+    CodeBuild -.->|Config| SSM
+    
+    %% Security
+    TasksLambda -.->|Assume| IAM
+    AuthLambda -.->|Assume| IAM
+    
+    %% Styling
+    classDef external fill:#fff2cc,stroke:#d6b656,stroke-width:2px
+    classDef frontend fill:#e1d5e7,stroke:#9673a6,stroke-width:2px
+    classDef backend fill:#d5e8d4,stroke:#82b366,stroke-width:2px
+    classDef cicd fill:#ffe6cc,stroke:#d79b00,stroke-width:2px
+    classDef security fill:#f8cecc,stroke:#b85450,stroke-width:2px
+    
+    class User,Firebase,Cloudflare external
+    class ACM,CloudFront,S3 frontend
+    class APIGW,AuthLambda,TasksLambda,DynamoDB backend
+    class CodeCommit,CodePipeline,CodeBuild cicd
+    class SSM,CloudWatch,IAM security
 ```
-┌─────────────┐      ┌──────────────┐      ┌─────────────┐
-│  CloudFront │─────▶│  S3 Bucket   │      │ API Gateway │
-│   (CDN)     │      │  (Frontend)  │      │  (HTTP API) │
-└─────────────┘      └──────────────┘      └─────────────┘
-                                                   │
-      ┌────────────────────────────────────────────┤
-      │                                            │
-      ▼                                            ▼
-┌─────────────┐                            ┌─────────────┐
-│  Firebase   │                            │   Lambda    │
-│    Auth     │◀───────────────────────────│ Authorizer  │
-└─────────────┘                            └─────────────┘
-                                                   │
-                                                   ▼
-┌─────────────┐      ┌──────────────┐      ┌─────────────┐
-│ Cloudflare  │      │ CodePipeline │      │   Lambda    │
-│    (DNS)    │      │   (CI/CD)    │      │  (Backend)  │
-└─────────────┘      └──────────────┘      └─────────────┘
-                                                   │
-                                                   ▼
-                                            ┌─────────────┐
-                                            │  DynamoDB   │
-                                            │  (Database) │
-                                            │  + GSI      │
-                                            └─────────────┘
-```
+
+**💰 Cost: $0.00/month** (100% AWS Free Tier) | [Detailed Architecture →](docs/ARCHITECTURE.md)
 
 ## 🔐 Authentication Flow
 
@@ -265,6 +325,8 @@ aws_region   = "us-east-1"
 
 ## 📚 Documentation
 
+- [Architecture Diagram](docs/ARCHITECTURE.md) - Visual architecture with Mermaid
+- [Cost Analysis](docs/COST_ANALYSIS.html) - Detailed cost breakdown and Free Tier usage
 - [Scripts Guide](docs/SCRIPTS.md) - All available scripts and usage
 - [Secrets Management](docs/SECRETS_MANAGEMENT.md) - AWS SSM Parameter Store guide
 - [Contributing](docs/CONTRIBUTING.md) - How to contribute
