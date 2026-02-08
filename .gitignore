@@ -79,3 +79,7 @@ aws*
 .env.*.local
 frontend/.env.local
 backend/.env.local
+
+
+# Presentation files
+presentacion/
