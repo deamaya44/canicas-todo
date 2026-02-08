@@ -151,6 +151,7 @@ while true; do
             ;;
         7)
             show_logs
+            read -p "Presiona ENTER para continuar..."
             ;;
         0)
             echo ""
