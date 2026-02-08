@@ -35,14 +35,14 @@ show_menu() {
 configure_firebase() {
     echo ""
     echo "🔥 Configurando Firebase..."
-    ./configure-firebase.sh
+    ./scripts/configure-firebase.sh
 }
 
 # Función para iniciar entorno local
 start_local() {
     echo ""
     echo "🐳 Iniciando entorno local..."
-    ./start-with-ssm.sh
+    ./scripts/start-with-ssm.sh
 }
 
 # Función para detener entorno local
@@ -58,7 +58,7 @@ deploy_aws() {
     local env=$1
     echo ""
     echo "☁️  Desplegando a AWS ($env)..."
-    ./deploy-codecommit.sh "$env"
+    ./scripts/deploy-codecommit.sh "$env"
 }
 
 # Función para ver estado
