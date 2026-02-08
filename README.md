@@ -52,8 +52,11 @@ graph TB
             CodeBuild["🔨 CodeBuild"]
         end
         
-        SSM["🔐 SSM Parameters"]
-        CloudWatch["📊 CloudWatch"]
+        subgraph Security["Security & Config"]
+            SSM["🔐 SSM Parameters"]
+            CloudWatch["📊 CloudWatch"]
+            IAM["👥 IAM Roles"]
+        end
     end
     
     User -->|1. DNS| Cloudflare
@@ -68,6 +71,9 @@ graph TB
     APIGW -->|7. Execute| TasksLambda
     TasksLambda -->|8. CRUD| DynamoDB
     TasksLambda -.->|Logs| CloudWatch
+    AuthLambda -.->|Logs| CloudWatch
+    TasksLambda -.->|Assume| IAM
+    AuthLambda -.->|Assume| IAM
     CodeCommit -->|Push| CodePipeline
     CodePipeline -->|Trigger| CodeBuild
     CodeBuild -.->|Deploy| S3
@@ -83,7 +89,7 @@ graph TB
     class ACM,CloudFront,S3 frontend
     class APIGW,AuthLambda,TasksLambda,DynamoDB backend
     class CodeCommit,CodePipeline,CodeBuild cicd
-    class SSM,CloudWatch security
+    class SSM,CloudWatch,IAM security
 ```
 
 **💰 Cost: $0.00/month** (100% AWS Free Tier) | [Detailed Architecture →](docs/ARCHITECTURE.md)
