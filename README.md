@@ -26,27 +26,24 @@ A modern task management application with a 3D physics-based interface built wit
 
 ```mermaid
 graph TB
-    %% External Services
     subgraph External["🌐 External Services"]
         User["👤 User"]
-        Firebase["🔥 Firebase<br/>Authentication"]
-        Cloudflare["☁️ Cloudflare<br/>DNS"]
+        Firebase["🔥 Firebase Auth"]
+        Cloudflare["☁️ Cloudflare DNS"]
     end
     
-    %% AWS Services
     subgraph AWS["☁️ AWS Account (us-east-1)"]
-        
         subgraph Frontend["Frontend Layer"]
-            ACM["🔒 ACM<br/>SSL/TLS"]
-            CloudFront["🌍 CloudFront<br/>CDN"]
-            S3["📦 S3<br/>Static Site"]
+            ACM["🔒 ACM SSL/TLS"]
+            CloudFront["🌍 CloudFront CDN"]
+            S3["📦 S3 Static Site"]
         end
         
         subgraph Backend["Backend Layer"]
-            APIGW["🚪 API Gateway<br/>HTTP API"]
-            AuthLambda["⚡ Lambda<br/>Authorizer"]
-            TasksLambda["⚡ Lambda<br/>Tasks API"]
-            DynamoDB["🗄️ DynamoDB<br/>Tasks Table"]
+            APIGW["🚪 API Gateway"]
+            AuthLambda["⚡ Lambda Authorizer"]
+            TasksLambda["⚡ Lambda Tasks API"]
+            DynamoDB["🗄️ DynamoDB"]
         end
         
         subgraph CICD["CI/CD Pipeline"]
@@ -55,47 +52,27 @@ graph TB
             CodeBuild["🔨 CodeBuild"]
         end
         
-        subgraph Security["Security & Config"]
-            SSM["🔐 SSM Parameters"]
-            CloudWatch["📊 CloudWatch Logs"]
-            IAM["👥 IAM Roles"]
-        end
+        SSM["🔐 SSM Parameters"]
+        CloudWatch["📊 CloudWatch"]
     end
     
-    %% User Flow
-    User -->|1. Auth| Firebase
-    User -->|2. DNS| Cloudflare
+    User -->|1. DNS| Cloudflare
+    User -->|2. Auth| Firebase
     Cloudflare -->|3. Route| CloudFront
-    User -->|4. HTTPS| CloudFront
-    
-    %% Frontend Flow
     ACM -.->|SSL| CloudFront
-    CloudFront -->|5. GET| S3
-    CloudFront -->|6. API| APIGW
-    
-    %% Backend Flow
-    APIGW -->|7. Verify| AuthLambda
+    CloudFront -->|4. GET| S3
+    CloudFront -->|5. API| APIGW
+    APIGW -->|6. Verify| AuthLambda
     AuthLambda -.->|Check| Firebase
     AuthLambda -.->|Config| SSM
-    APIGW -->|8. Execute| TasksLambda
-    TasksLambda -->|9. Query| DynamoDB
-    
-    %% Logging
+    APIGW -->|7. Execute| TasksLambda
+    TasksLambda -->|8. CRUD| DynamoDB
     TasksLambda -.->|Logs| CloudWatch
-    AuthLambda -.->|Logs| CloudWatch
-    
-    %% CI/CD Flow
     CodeCommit -->|Push| CodePipeline
-    CodePipeline -->|Build| CodeBuild
+    CodePipeline -->|Trigger| CodeBuild
     CodeBuild -.->|Deploy| S3
     CodeBuild -.->|Deploy| TasksLambda
-    CodeBuild -.->|Config| SSM
     
-    %% Security
-    TasksLambda -.->|Assume| IAM
-    AuthLambda -.->|Assume| IAM
-    
-    %% Styling
     classDef external fill:#fff2cc,stroke:#d6b656,stroke-width:2px
     classDef frontend fill:#e1d5e7,stroke:#9673a6,stroke-width:2px
     classDef backend fill:#d5e8d4,stroke:#82b366,stroke-width:2px
@@ -106,7 +83,7 @@ graph TB
     class ACM,CloudFront,S3 frontend
     class APIGW,AuthLambda,TasksLambda,DynamoDB backend
     class CodeCommit,CodePipeline,CodeBuild cicd
-    class SSM,CloudWatch,IAM security
+    class SSM,CloudWatch security
 ```
 
 **💰 Cost: $0.00/month** (100% AWS Free Tier) | [Detailed Architecture →](docs/ARCHITECTURE.md)
