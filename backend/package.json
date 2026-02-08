@@ -1,0 +1,20 @@
+{
+  "name": "tasks-api",
+  "version": "1.0.0",
+  "description": "Tasks API with Lambda and DynamoDB",
+  "main": "src/handlers/tasks.js",
+  "scripts": {
+    "test": "echo \"No tests yet\" && exit 0",
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "dependencies": {
+    "@aws-sdk/client-dynamodb": "^3.490.0",
+    "@aws-sdk/lib-dynamodb": "^3.490.0",
+    "uuid": "^9.0.1"
+  },
+  "devDependencies": {},
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

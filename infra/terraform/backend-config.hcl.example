@@ -1,0 +1,8 @@
+# Backend configuration for Terraform
+# This file is generated automatically - do not commit
+
+# Get your AWS account ID
+ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+
+# S3 bucket for Terraform state
+bucket = "tasks-3d-terraform-state-${ACCOUNT_ID}"

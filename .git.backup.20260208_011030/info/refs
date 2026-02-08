@@ -1,0 +1,9 @@
+f2dba8025a4745bcc8c125338d8aeddba570001f	refs/heads/dev
+5375bc63b168da2316ee0770e47b3a738b635b2b	refs/heads/frontend-deploy
+427ac6d549cb8f12ff22acefad9fe17a5c8f2eb1	refs/heads/main
+e80e56d071d5da0c0b6d27078e2a74db53099b77	refs/remotes/codecommit-backend-dev/main
+d96b444b482ffc3de62a39761d8132d7188b92de	refs/remotes/codecommit-backend/main
+1765043aa71b052be1d258fecc5648dd60c42061	refs/remotes/codecommit-frontend-dev/main
+5375bc63b168da2316ee0770e47b3a738b635b2b	refs/remotes/codecommit-frontend/main
+492de8e43b50a402abb717dcbb7ca0bab3b1aa24	refs/remotes/origin/dev
+427ac6d549cb8f12ff22acefad9fe17a5c8f2eb1	refs/remotes/origin/main

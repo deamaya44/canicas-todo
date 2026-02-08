@@ -1,0 +1,35 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+  
+  pre_build:
+    commands:
+      - echo Installing dependencies...
+      - npm install
+  
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Building React app...
+      - export VITE_API_URL=https://$API_DOMAIN
+      - npm run build
+  
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Uploading to S3...
+      - aws s3 sync dist/ s3://$FRONTEND_BUCKET/ --delete
+      - echo Invalidating CloudFront cache...
+      - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --paths "/*"
+
+artifacts:
+  files:
+    - '**/*'
+  base-directory: dist
+
+cache:
+  paths:
+    - 'node_modules/**/*'

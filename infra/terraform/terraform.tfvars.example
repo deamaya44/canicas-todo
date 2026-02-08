@@ -1,0 +1,7 @@
+project_name = "my-project"
+owner        = "your-team"
+aws_region   = "us-east-1"
+
+notification_emails = [
+  "dev@example.com"
+]
