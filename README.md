@@ -16,9 +16,10 @@ A modern task management application with a 3D physics-based interface built wit
 - 📱 **Responsive Design** - Optimized for both desktop and mobile devices
 - ☁️ **Serverless Backend** - AWS Lambda + API Gateway + DynamoDB
 - 🚀 **Full CI/CD Pipeline** - Automated deployments with AWS CodePipeline
-- 🔒 **Secure** - CloudFront OAC, CORS restrictions, IAM roles, Lambda authorizer
+- 🔒 **Secure by Design** - All credentials in AWS SSM, no secrets in code
 - 🌐 **Custom Domain** - SSL certificates with automatic DNS validation
 - 🐳 **Docker Support** - Local development environment included
+- 📜 **Interactive Scripts** - Easy setup and deployment with guided menus
 
 ## 🏗️ Architecture
 
@@ -290,7 +291,21 @@ aws_region   = "us-east-1"
 
 ## 🤝 Contributing
 
-Contributions are welcome! Please read [CONTRIBUTING.md](.github/CONTRIBUTING.md) first.
+Contributions are welcome! Please read [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) first.
+
+## 🔒 Security
+
+This project follows security best practices:
+
+- ✅ **No hardcoded credentials** - All secrets in AWS SSM Parameter Store
+- ✅ **Clean Git history** - No exposed credentials in commit history
+- ✅ **Dynamic configuration** - Account IDs and domains from SSM
+- ✅ **Firebase authentication** - Secure OAuth 2.0 flow with Google
+- ✅ **Lambda authorizer** - JWT token verification on every request
+- ✅ **Per-user isolation** - DynamoDB GSI ensures data privacy
+- ✅ **IAM least privilege** - Fine-grained access control
+
+For security concerns, see [docs/SECURITY_PLAN.md](docs/SECURITY_PLAN.md)
 
 ## 📝 License
 
