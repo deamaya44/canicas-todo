@@ -73,11 +73,11 @@ graph TB
     CodeBuild -.->|Deploy| S3
     CodeBuild -.->|Deploy| TasksLambda
     
-    classDef external fill:#fff2cc,stroke:#d6b656,stroke-width:2px
-    classDef frontend fill:#e1d5e7,stroke:#9673a6,stroke-width:2px
-    classDef backend fill:#d5e8d4,stroke:#82b366,stroke-width:2px
-    classDef cicd fill:#ffe6cc,stroke:#d79b00,stroke-width:2px
-    classDef security fill:#f8cecc,stroke:#b85450,stroke-width:2px
+    classDef external fill:#fff2cc,stroke:#d6b656,stroke-width:2px,color:#000
+    classDef frontend fill:#e1d5e7,stroke:#9673a6,stroke-width:2px,color:#000
+    classDef backend fill:#d5e8d4,stroke:#82b366,stroke-width:2px,color:#000
+    classDef cicd fill:#ffe6cc,stroke:#d79b00,stroke-width:2px,color:#000
+    classDef security fill:#f8cecc,stroke:#b85450,stroke-width:2px,color:#000
     
     class User,Firebase,Cloudflare external
     class ACM,CloudFront,S3 frontend
