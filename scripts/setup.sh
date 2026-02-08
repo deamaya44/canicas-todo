@@ -112,8 +112,11 @@ show_status() {
 # Función para ver logs
 show_logs() {
     echo ""
-    echo "📋 Logs de Docker (Ctrl+C para salir)..."
-    docker-compose logs -f
+    echo "📋 Últimos logs de Docker..."
+    echo ""
+    docker-compose logs --tail=50
+    echo ""
+    echo "💡 Para ver logs en tiempo real: docker-compose logs -f"
 }
 
 # Loop principal
