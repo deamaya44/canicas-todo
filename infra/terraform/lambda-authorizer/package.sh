@@ -24,4 +24,7 @@ rm -f lambda-authorizer.zip
 cd lambda-authorizer
 zip -r ../lambda-authorizer.zip . -x "*.git*"
 
+# Wait for file to be fully written
+sleep 1
+
 echo "✅ Authorizer packaged successfully"
