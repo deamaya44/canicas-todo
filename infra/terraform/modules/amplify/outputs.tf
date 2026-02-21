@@ -32,3 +32,8 @@ output "domain_association" {
   description = "Domain association details (if configured)"
   value       = var.custom_domain != "" ? aws_amplify_domain_association.this[0] : null
 }
+
+output "cloudfront_domain" {
+  description = "CloudFront domain for custom domain (if configured)"
+  value       = var.custom_domain != "" ? try(tolist(aws_amplify_domain_association.this[0].sub_domain)[0].dns_record, null) : null
+}
