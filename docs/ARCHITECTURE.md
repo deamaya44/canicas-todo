@@ -1,6 +1,6 @@
 ```mermaid
 ---
-title: Canicas TODO - AWS Serverless Architecture
+title: Canicas TODO - AWS Serverless Architecture (Amplify)
 ---
 graph TB
     %% External Services
@@ -14,12 +14,12 @@ graph TB
     subgraph AWS["☁️ AWS Account (us-east-1)"]
         
         subgraph Frontend["Frontend Layer"]
-            ACM["🔒 ACM<br/>SSL/TLS"]
-            CloudFront["🌍 CloudFront<br/>CDN"]
-            S3["📦 S3<br/>Static Site"]
+            ACM_Front["🔒 ACM<br/>SSL/TLS"]
+            Amplify["🚀 Amplify<br/>Hosting + CDN"]
         end
         
         subgraph Backend["Backend Layer"]
+            ACM_API["🔒 ACM<br/>SSL/TLS"]
             APIGW["🚪 API Gateway<br/>HTTP API"]
             AuthLambda["⚡ Lambda<br/>Authorizer"]
             TasksLambda["⚡ Lambda<br/>Tasks API"]
@@ -29,7 +29,7 @@ graph TB
         subgraph CICD["CI/CD Pipeline"]
             CodeCommit["📝 CodeCommit<br/>Repositories"]
             CodePipeline["🔄 CodePipeline"]
-            CodeBuild["🔨 CodeBuild"]
+            CodeBuild["🔨 CodeBuild<br/>(Manual Deploy)"]
         end
         
         subgraph Security["Security & Config"]
@@ -42,30 +42,30 @@ graph TB
     %% User Flow
     User -->|1. Auth| Firebase
     User -->|2. DNS Query| Cloudflare
-    Cloudflare -->|3. Route| CloudFront
-    User -->|4. HTTPS| CloudFront
+    Cloudflare -->|3. Route| Amplify
+    User -->|4. HTTPS| Amplify
     
     %% Frontend Flow
-    ACM -.->|SSL Cert| CloudFront
-    CloudFront -->|5. GET| S3
-    CloudFront -->|6. API Call| APIGW
+    ACM_Front -.->|SSL Cert| Amplify
+    Amplify -->|5. API Call| APIGW
     
     %% Backend Flow
-    APIGW -->|7. Verify| AuthLambda
+    ACM_API -.->|SSL Cert| APIGW
+    APIGW -->|6. Verify| AuthLambda
     AuthLambda -.->|Check Token| Firebase
     AuthLambda -.->|Get Config| SSM
-    APIGW -->|8. Execute| TasksLambda
-    TasksLambda -->|9. Query| DynamoDB
+    APIGW -->|7. Execute| TasksLambda
+    TasksLambda -->|8. Query| DynamoDB
     
     %% Logging
     TasksLambda -.->|Logs| CloudWatch
     AuthLambda -.->|Logs| CloudWatch
     
-    %% CI/CD Flow
-    CodeCommit -->|Push| CodePipeline
-    CodePipeline -->|Build| CodeBuild
-    CodeBuild -.->|Deploy| S3
-    CodeBuild -.->|Deploy| TasksLambda
+    %% CI/CD Flow (Manual)
+    CodeCommit -.->|Push| CodePipeline
+    CodePipeline -.->|Trigger| CodeBuild
+    CodeBuild -.->|Manual Script| Amplify
+    CodeBuild -.->|Manual Script| TasksLambda
     CodeBuild -.->|Read Config| SSM
     
     %% Security
@@ -80,8 +80,8 @@ graph TB
     classDef security fill:#f8cecc,stroke:#b85450,stroke-width:2px
     
     class User,Firebase,Cloudflare external
-    class ACM,CloudFront,S3 frontend
-    class APIGW,AuthLambda,TasksLambda,DynamoDB backend
+    class ACM_Front,Amplify frontend
+    class ACM_API,APIGW,AuthLambda,TasksLambda,DynamoDB backend
     class CodeCommit,CodePipeline,CodeBuild cicd
     class SSM,CloudWatch,IAM security
 ```
@@ -92,20 +92,19 @@ graph TB
 
 **Components:**
 - **External:** Firebase Auth, Cloudflare DNS
-- **Frontend:** CloudFront + S3 + ACM
+- **Frontend:** AWS Amplify + ACM (replaces CloudFront + S3)
 - **Backend:** API Gateway + Lambda (x2) + DynamoDB
-- **CI/CD:** CodeCommit + CodePipeline + CodeBuild
+- **CI/CD:** CodeCommit + CodePipeline + CodeBuild (manual deploy via scripts)
 - **Security:** SSM + CloudWatch + IAM
 
 **Flow:**
 1. User authenticates with Firebase
 2. DNS resolves via Cloudflare
-3. HTTPS traffic through CloudFront
-4. Static content from S3
-5. API calls to API Gateway
-6. Lambda Authorizer verifies Firebase token
-7. Lambda Backend queries DynamoDB
-8. All logs to CloudWatch
+3. HTTPS traffic through Amplify (includes CDN)
+4. API calls to API Gateway
+5. Lambda Authorizer verifies Firebase token
+6. Lambda Backend queries DynamoDB
+7. All logs to CloudWatch
 
 **Legend:**
 - Solid lines (→) = Data flow
