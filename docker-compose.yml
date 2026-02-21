@@ -1,6 +1,11 @@
-version: '3.8'
-
 services:
+  dynamodb:
+    image: amazon/dynamodb-local:latest
+    ports:
+      - "8000:8000"
+    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
+    network_mode: host
+
   backend:
     build: ./backend
     ports:
@@ -8,17 +13,26 @@ services:
     environment:
       - PORT=3001
       - NODE_ENV=development
-      - TABLE_NAME=tasks-local
+      - TABLE_NAME=tasks
+      - AWS_REGION=us-east-1
+      - AWS_ACCESS_KEY_ID=dummy
+      - AWS_SECRET_ACCESS_KEY=dummy
+      - DYNAMODB_ENDPOINT=http://localhost:8000
+      - DEV_USER_ID=local-dev-user
     volumes:
       - ./backend:/app
       - /app/node_modules
+    depends_on:
+      - dynamodb
+    command: sh -c "sleep 3 && node scripts/init-db.js && npm start"
+    network_mode: host
 
   frontend:
     build: ./frontend
     ports:
       - "3000:3000"
     environment:
-      - VITE_API_URL=http://localhost:3001
+      - VITE_API_URL=http://localhost/api
       - VITE_FIREBASE_API_KEY=${VITE_FIREBASE_API_KEY}
       - VITE_FIREBASE_AUTH_DOMAIN=${VITE_FIREBASE_AUTH_DOMAIN}
       - VITE_FIREBASE_PROJECT_ID=${VITE_FIREBASE_PROJECT_ID}
@@ -30,3 +44,15 @@ services:
       - /app/node_modules
     depends_on:
       - backend
+    network_mode: host
+
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf:ro
+    depends_on:
+      - frontend
+      - backend
+    network_mode: host
