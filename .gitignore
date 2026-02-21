@@ -83,3 +83,5 @@ backend/.env.local
 
 # Presentation files
 presentacion/
+*.backup*
+.git.backup*
