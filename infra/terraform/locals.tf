@@ -57,8 +57,8 @@ locals {
       source_type      = "CODECOMMIT"
       buildspec        = "buildspec.yml"
       compute_type     = "BUILD_GENERAL1_SMALL"
-      image            = "aws/codebuild/standard:7.0"
-      type             = "LINUX_CONTAINER"
+      image            = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
+      type             = "ARM_CONTAINER"
       privileged       = true
       tags             = merge(local.common_tags, { Component = "backend" })
     }
@@ -68,8 +68,8 @@ locals {
       source_type      = "CODECOMMIT"
       buildspec        = "buildspec.yml"
       compute_type     = "BUILD_GENERAL1_SMALL"
-      image            = "aws/codebuild/standard:7.0"
-      type             = "LINUX_CONTAINER"
+      image            = "aws/codebuild/amazonlinux2-aarch64-standard:3.0"
+      type             = "ARM_CONTAINER"
       privileged       = false
       tags             = merge(local.common_tags, { Component = "frontend" })
     }

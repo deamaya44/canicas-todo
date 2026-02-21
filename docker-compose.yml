@@ -1,47 +1,20 @@
 version: '3.8'
 
 services:
-  # DynamoDB Local
-  dynamodb:
-    image: amazon/dynamodb-local:latest
-    container_name: tasks-dynamodb
-    ports:
-      - "8000:8000"
-    command: "-jar DynamoDBLocal.jar -sharedDb -inMemory"
-    networks:
-      - tasks-network
-
-  # Backend API
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: tasks-backend
+    build: ./backend
     ports:
       - "3001:3001"
     environment:
+      - PORT=3001
       - NODE_ENV=development
-      - TABLE_NAME=tasks
-      - AWS_REGION=us-east-1
-      - AWS_ACCESS_KEY_ID=dummy
-      - AWS_SECRET_ACCESS_KEY=dummy
-      - DYNAMODB_ENDPOINT=http://dynamodb:8000
-      - DEV_USER_ID=local-dev-user
-    depends_on:
-      - dynamodb
+      - TABLE_NAME=tasks-local
     volumes:
       - ./backend:/app
       - /app/node_modules
-    networks:
-      - tasks-network
-    command: sh -c "sleep 5 && node scripts/init-db.js && npm start"
 
-  # Frontend React
   frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    container_name: tasks-frontend
+    build: ./frontend
     ports:
       - "3000:3000"
     environment:
@@ -55,11 +28,5 @@ services:
     volumes:
       - ./frontend:/app
       - /app/node_modules
-    networks:
-      - tasks-network
     depends_on:
       - backend
-
-networks:
-  tasks-network:
-    driver: bridge
