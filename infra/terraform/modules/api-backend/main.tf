@@ -127,12 +127,34 @@ resource "aws_apigatewayv2_api" "this" {
 }
 
 # Firebase Lambda Authorizer
+# Package authorizer with dependencies
+resource "null_resource" "authorizer_package" {
+  triggers = {
+    code_hash    = filemd5("${path.module}/../../lambda-authorizer/index.js")
+    package_hash = filemd5("${path.module}/../../lambda-authorizer/package.json")
+  }
+
+  provisioner "local-exec" {
+    command     = "./package.sh"
+    working_dir = "${path.module}/../../lambda-authorizer"
+  }
+}
+
+data "archive_file" "authorizer" {
+  type        = "zip"
+  source_dir  = "${path.module}/../../lambda-authorizer"
+  output_path = "${path.module}/../../lambda-authorizer.zip"
+  excludes    = [".git", ".gitignore", "package.sh"]
+
+  depends_on = [null_resource.authorizer_package]
+}
+
 resource "aws_lambda_function" "authorizer" {
-  filename         = "${path.module}/../../lambda-authorizer.zip"
+  filename         = data.archive_file.authorizer.output_path
   function_name    = "${var.project_name}-${var.environment}-firebase-authorizer"
   role            = aws_iam_role.authorizer.arn
   handler         = "index.handler"
-  source_code_hash = fileexists("${path.module}/../../lambda-authorizer.zip") ? filebase64sha256("${path.module}/../../lambda-authorizer.zip") : ""
+  source_code_hash = data.archive_file.authorizer.output_base64sha256
   runtime         = "nodejs18.x"
   timeout         = 10
 
