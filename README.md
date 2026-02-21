@@ -24,75 +24,35 @@ A modern task management application with a 3D physics-based interface built wit
 
 ## 🏗️ Architecture
 
-```mermaid
-graph TB
-    subgraph External["🌐 External Services"]
-        User["👤 User"]
-        Firebase["🔥 Firebase Auth"]
-        Cloudflare["☁️ Cloudflare DNS"]
-    end
-    
-    subgraph AWS["☁️ AWS Account (us-east-1)"]
-        subgraph Frontend["Frontend Layer"]
-            ACM["🔒 ACM SSL/TLS"]
-            CloudFront["🌍 CloudFront CDN"]
-            S3["📦 S3 Static Site"]
-        end
-        
-        subgraph Backend["Backend Layer"]
-            APIGW["🚪 API Gateway"]
-            AuthLambda["⚡ Lambda Authorizer"]
-            TasksLambda["⚡ Lambda Tasks API"]
-            DynamoDB["🗄️ DynamoDB"]
-        end
-        
-        subgraph CICD["CI/CD Pipeline"]
-            CodeCommit["📝 CodeCommit"]
-            CodePipeline["🔄 CodePipeline"]
-            CodeBuild["🔨 CodeBuild"]
-        end
-        
-        subgraph Security["Security & Config"]
-            SSM["🔐 SSM Parameters"]
-            CloudWatch["📊 CloudWatch"]
-            IAM["👥 IAM Roles"]
-        end
-    end
-    
-    User -->|1. DNS| Cloudflare
-    User -->|2. Auth| Firebase
-    Cloudflare -->|3. Route| CloudFront
-    ACM -.->|SSL| CloudFront
-    CloudFront -->|4. GET| S3
-    CloudFront -->|5. API| APIGW
-    APIGW -->|6. Verify| AuthLambda
-    AuthLambda -.->|Check| Firebase
-    AuthLambda -.->|Config| SSM
-    APIGW -->|7. Execute| TasksLambda
-    TasksLambda -->|8. CRUD| DynamoDB
-    TasksLambda -.->|Logs| CloudWatch
-    AuthLambda -.->|Logs| CloudWatch
-    TasksLambda -.->|Assume| IAM
-    AuthLambda -.->|Assume| IAM
-    CodeCommit -->|Push| CodePipeline
-    CodePipeline -->|Trigger| CodeBuild
-    CodeBuild -.->|Deploy| S3
-    CodeBuild -.->|Deploy| TasksLambda
-    
-    classDef external fill:#fff2cc,stroke:#d6b656,stroke-width:2px,color:#000
-    classDef frontend fill:#e1d5e7,stroke:#9673a6,stroke-width:2px,color:#000
-    classDef backend fill:#d5e8d4,stroke:#82b366,stroke-width:2px,color:#000
-    classDef cicd fill:#ffe6cc,stroke:#d79b00,stroke-width:2px,color:#000
-    classDef security fill:#f8cecc,stroke:#b85450,stroke-width:2px,color:#000
-    
-    class User,Firebase,Cloudflare external
-    class ACM,CloudFront,S3 frontend
-    class APIGW,AuthLambda,TasksLambda,DynamoDB backend
-    class CodeCommit,CodePipeline,CodeBuild cicd
-    class SSM,CloudWatch,IAM security
-```
+### Infrastructure Overview
 
-**💰 Cost: $0.00/month** (100% AWS Free Tier) | [Detailed Architecture →](docs/ARCHITECTURE.md)
+**56 AWS Resources Deployed via Terraform:**
+
+- **Frontend:** Amplify App + CloudFront + Custom Domain
+- **Backend:** API Gateway HTTP + Lambda Functions + DynamoDB
+- **Security:** Firebase JWT Authorizer + IAM Roles + ACM Certificates
+- **CI/CD:** CodeCommit + CodeBuild + CodePipeline + EventBridge
+- **Storage:** S3 Artifacts + DynamoDB Table
+- **Monitoring:** CloudWatch Logs + Metrics
+
+### Request Flow
+
+1. User authenticates with Firebase (Google OAuth)
+2. Frontend sends requests to API Gateway with JWT token
+3. Lambda Authorizer verifies token with Firebase Admin SDK
+4. API Gateway routes to backend Lambda
+5. Backend queries DynamoDB filtered by userId
+6. Response returns only user's tasks
+
+### Deployment
+
+All infrastructure managed with Terraform using atomic modules:
+- Modular design with reusable components
+- Automatic imports for existing resources
+- Local exec provisioners for Lambda packaging
+- No manual configuration required
+
+**Cost:** $0.00/month (AWS Free Tier)
 
 ## 🔐 Authentication Flow
 
@@ -108,69 +68,46 @@ graph TB
 
 ## 🚀 Quick Start
 
+### Prerequisites
+
+- AWS Account with CLI configured
+- Firebase project with Google Sign-In enabled
+- Terraform installed
+- Node.js 18+ and npm
+
+### Setup
+
 ```bash
-# Clone the repository
+# Clone repository
 git clone https://github.com/deamaya44/canicas-todo.git
 cd canicas-todo
 
-# Run interactive setup
-./setup
+# Configure AWS SSM Parameters (required)
+aws ssm put-parameter --name "/tasks-3d/firebase/project_id" --value "YOUR_PROJECT_ID" --type String
+aws ssm put-parameter --name "/tasks-3d/firebase/api_key" --value "YOUR_API_KEY" --type SecureString
+# ... (see docs/SECRETS_MANAGEMENT.md for all parameters)
 
-# Follow the menu to:
-# 1. Configure Firebase (first time)
-# 2. Start local environment
-# 3. Deploy to AWS
-```
-
-That's it! The interactive menu guides you through everything.
-
-### Manual Setup
-
-If you prefer manual commands:
-
-```bash
-# Configure Firebase credentials
-./scripts/configure-firebase.sh
-
-# Start local development
-./scripts/start-with-ssm.sh
-
-# Deploy to AWS
-./scripts/deploy-codecommit.sh dev
-```
-
-### Deploy to AWS
-
-```bash
-# 1. Configure AWS credentials
-aws configure
-
-# 2. Create Firebase project and enable Google Sign-In
-# Get your Firebase project ID from Firebase Console
-
-# 3. Store Firebase project ID in AWS SSM
-aws ssm put-parameter \
-  --name "/tasks-3d/firebase/project_id" \
-  --value "your-firebase-project-id" \
-  --type String \
-  --region us-east-1
-
-# 4. Store Cloudflare API token (if using custom domain)
-aws ssm put-parameter \
-  --name "/tasks-3d/cloudflare/api_token" \
-  --value "your-cloudflare-token" \
-  --type SecureString \
-  --region us-east-1
-
-# 5. Deploy infrastructure
+# Deploy infrastructure
 cd infra/terraform
 terraform init
-terraform workspace new dev  # or: terraform workspace select dev
-terraform apply -var-file="terraform.tfvars"
+terraform apply -auto-approve
 
-# 6. Deploy application code
-cd ../..
-./deploy-codecommit.sh dev
+# Deploy application code to CodeCommit
+# (Pipeline will automatically build and deploy)
+```
+
+### Local Development
+
+```bash
+# Frontend
+cd frontend
+npm install
+npm run dev
+
+# Backend
+cd backend
+npm install
+npm run dev
 ```
 
 ## 📁 Project Structure
@@ -238,36 +175,28 @@ cd ../..
 
 ## 🔧 Configuration
 
-### Environment Variables
+All configuration is stored in AWS SSM Parameter Store. No hardcoded values.
 
-**Frontend (.env.example)**
+### Required SSM Parameters
+
 ```bash
-VITE_API_URL=http://localhost:3001
-VITE_FIREBASE_API_KEY=your-api-key
-VITE_FIREBASE_AUTH_DOMAIN=your-project.firebaseapp.com
-VITE_FIREBASE_PROJECT_ID=your-project-id
+/tasks-3d/firebase/project_id
+/tasks-3d/firebase/api_key
+/tasks-3d/firebase/auth_domain
+/tasks-3d/firebase/storage_bucket
+/tasks-3d/firebase/messaging_sender_id
+/tasks-3d/firebase/app_id
+/tasks-3d/cloudflare/api_token
+/tasks-3d/cloudflare/zone_id
+/tasks-3d/cloudflare/domain
 ```
 
-**Backend (local)**
-```bash
-TABLE_NAME=tasks-3d-tasks
-AWS_REGION=us-east-1
-NODE_ENV=development
-```
+See [docs/SECRETS_MANAGEMENT.md](docs/SECRETS_MANAGEMENT.md) for details.
 
-**Lambda Authorizer**
-```bash
-FIREBASE_PROJECT_ID=your-project-id  # From SSM Parameter Store
-```
+### Terraform Configuration
 
-### Terraform Variables
-
-Create `terraform.tfvars`:
-```hcl
-project_name = "tasks-3d"
-environment  = "dev"
-aws_region   = "us-east-1"
-```
+All configuration in `locals.tf` - no `.tfvars` files needed.
+Workspace-based environments: `terraform workspace select prod`
 
 ## 🔐 Security Features
 
@@ -281,30 +210,28 @@ aws_region   = "us-east-1"
 
 ## 📊 DynamoDB Schema
 
-**Table: tasks-3d-{env}-tasks**
-- **Primary Key**: `id` (String) - Task UUID
-- **Attributes**:
-  - `userId` (String) - Firebase user ID
-  - `title` (String)
-  - `description` (String)
-  - `color` (String)
-  - `completed` (Boolean)
-  - `createdAt` (String - ISO 8601)
-  - `updatedAt` (String - ISO 8601)
+**Table Structure:**
+- **Primary Key**: `taskId` (String) - Unique task identifier
+- **Sort Key**: `userId` (String) - Firebase user ID
+- **Attributes**: title, description, color, completed, timestamps
 
-**Global Secondary Index: UserIdIndex**
-- **Partition Key**: `userId`
-- **Projection**: ALL
-- **Purpose**: Efficient per-user task queries
+**Global Secondary Index:**
+- **Name**: UserIdIndex
+- **Partition Key**: userId
+- **Purpose**: Efficient per-user queries
+
+All queries filtered by userId for data isolation.
 
 ## 🚀 CI/CD Pipeline
 
-1. **Source Stage**: Monitors CodeCommit repositories (backend + frontend)
-2. **Build Stage**: 
-   - Backend: Packages Lambda, updates function code
-   - Frontend: Builds React app, deploys to S3, invalidates CloudFront
+**Automated Deployment:**
+1. Push code to CodeCommit repository
+2. EventBridge triggers CodePipeline on main branch
+3. CodeBuild packages and deploys:
+   - Backend: Lambda function update
+   - Frontend: Amplify deployment
 
-**Deployment Script**: `./deploy-codecommit.sh <environment>`
+**Zero-downtime deployments** with automatic rollback on failure.
 
 ## 📚 Documentation
 
@@ -320,19 +247,21 @@ aws_region   = "us-east-1"
 ## 🐛 Troubleshooting
 
 ### Authentication Issues
-- Check Firebase project ID in SSM Parameter Store
-- Verify Google Sign-In is enabled in Firebase Console
-- Check browser console for Firebase errors
+- Verify Firebase configuration in SSM Parameter Store
+- Check Google Sign-In is enabled in Firebase Console
+- Review browser console for errors
 
-### API 401 Errors
-- Ensure Lambda authorizer has correct Firebase project ID
-- Check CloudWatch logs: `/aws/lambda/tasks-3d-{env}-firebase-authorizer`
-- Verify token is being sent in Authorization header
+### API Errors
+- Check Lambda authorizer CloudWatch logs
+- Verify JWT token format in Authorization header
+- Confirm Firebase project ID matches
 
 ### Tasks Not Loading
-- Check Lambda logs: `/aws/lambda/tasks-3d-{env}-tasks`
-- Verify DynamoDB table exists and has UserIdIndex GSI
-- Check IAM role has `dynamodb:Query` permission on GSI
+- Review backend Lambda CloudWatch logs
+- Verify DynamoDB table and GSI exist
+- Check IAM permissions for DynamoDB access
+
+For detailed logs: AWS CloudWatch → Log Groups → `/aws/lambda/`
 
 ## 🤝 Contributing
 
