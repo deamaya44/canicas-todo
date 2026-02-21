@@ -47,32 +47,20 @@ data "aws_iam_policy_document" "codebuild_policy" {
   }
 
   # Permisos para frontend: subir archivos a S3 bucket de hosting
+  # Permisos para frontend: deploy a Amplify
   dynamic "statement" {
-    for_each = var.frontend_bucket_arn != "" ? [1] : []
+    for_each = var.amplify_app_arn != "" ? [1] : []
     content {
       effect = "Allow"
       actions = [
-        "s3:PutObject",
-        "s3:PutObjectAcl",
-        "s3:DeleteObject",
-        "s3:ListBucket"
+        "amplify:CreateDeployment",
+        "amplify:StartDeployment",
+        "amplify:GetJob"
       ]
       resources = [
-        var.frontend_bucket_arn,
-        "${var.frontend_bucket_arn}/*"
+        var.amplify_app_arn,
+        "${var.amplify_app_arn}/*"
       ]
-    }
-  }
-
-  # Permisos para frontend: invalidar CloudFront
-  dynamic "statement" {
-    for_each = var.cloudfront_distribution_arn != "" ? [1] : []
-    content {
-      effect = "Allow"
-      actions = [
-        "cloudfront:CreateInvalidation"
-      ]
-      resources = [var.cloudfront_distribution_arn]
     }
   }
 

@@ -60,12 +60,13 @@ output "dynamodb_table" {
   value       = module.api_backend.dynamodb_table_name
 }
 
-output "cloudfront_distribution" {
-  description = "CloudFront distribution details"
+output "amplify_app" {
+  description = "Amplify app details"
+  sensitive   = true
   value = {
-    id          = module.cloudfront.distribution_id
-    domain_name = module.cloudfront.domain_name
-    url         = "https://${module.cloudfront.domain_name}"
+    app_id       = module.amplify_frontend.app_id
+    branch_url   = module.amplify_frontend.branch_url
+    custom_domain = module.amplify_frontend.custom_domain
   }
 }
 

@@ -30,9 +30,8 @@ module "codebuild" {
   privileged_mode             = each.value.privileged
   artifacts_bucket            = module.s3_buckets["artifacts"].bucket_name
   artifacts_bucket_arn        = each.value.artifacts_bucket_arn
-  frontend_bucket_arn         = each.key == "frontend" ? module.s3_buckets["frontend"].arn : ""
   lambda_function_arn         = each.key == "backend" ? module.api_backend.lambda_function_arn : ""
-  cloudfront_distribution_arn = each.key == "frontend" ? module.cloudfront.distribution_arn : ""
+  amplify_app_arn             = each.key == "frontend" ? module.amplify_frontend.app_arn : ""
   common_tags                 = each.value.tags
   
   environment_variables = each.key == "backend" ? {
@@ -40,10 +39,10 @@ module "codebuild" {
     LAMBDA_FUNCTION_NAME  = module.api_backend.lambda_function_name
     AWS_REGION            = data.aws_region.current.id
   } : {
-    FRONTEND_BUCKET       = module.s3_buckets["frontend"].bucket_name
-    CLOUDFRONT_DIST_ID    = module.cloudfront.distribution_id
+    AMPLIFY_APP_ID        = module.amplify_frontend.app_id
+    BRANCH_NAME           = "main"
     AWS_REGION            = data.aws_region.current.id
-    API_DOMAIN            = "${local.config.api_domain}.${data.aws_ssm_parameter.cloudflare_domain.value}"
+    VITE_API_URL          = "https://${local.config.api_domain}.${data.aws_ssm_parameter.cloudflare_domain.value}"
     VITE_FIREBASE_API_KEY = data.aws_ssm_parameter.firebase_api_key.value
     VITE_FIREBASE_AUTH_DOMAIN = data.aws_ssm_parameter.firebase_auth_domain.value
     VITE_FIREBASE_PROJECT_ID = data.aws_ssm_parameter.firebase_project_id.value
@@ -52,7 +51,7 @@ module "codebuild" {
     VITE_FIREBASE_APP_ID = data.aws_ssm_parameter.firebase_app_id.value
   }
 
-  depends_on = [module.codecommit, module.s3_buckets, module.cloudfront]
+  depends_on = [module.codecommit, module.s3_buckets, module.amplify_frontend]
 }
 
 module "codepipeline" {
@@ -95,41 +94,20 @@ module "api_backend" {
   depends_on = [aws_acm_certificate_validation.backend]
 }
 
-module "cloudfront" {
-  source = "./modules/cloudfront"
+module "amplify_frontend" {
+  source = "git::https://github.com/deamaya44/aws_modules.git//modules/amplify?ref=main"
 
-  origin_domain_name  = module.s3_buckets["frontend"].bucket_regional_domain_name
-  origin_id           = "S3-${local.project_name}-${local.environment}-frontend"
-  default_root_object = "index.html"
-  comment             = "${local.project_name} ${local.environment} frontend distribution"
-  aliases             = ["${local.config.frontend_domain}.${data.aws_ssm_parameter.cloudflare_domain.value}"]
-  acm_certificate_arn = aws_acm_certificate_validation.frontend.certificate_arn
-  common_tags         = local.common_tags
+  app_name    = "${local.project_name}-${local.environment}"
+  branch_name = "main"
 
-  depends_on = [module.s3_buckets, aws_acm_certificate_validation.frontend]
-}
+  environment_variables = {
+    VITE_API_URL = "https://${local.config.api_domain}.${data.aws_ssm_parameter.cloudflare_domain.value}"
+  }
 
-# Update frontend bucket policy to allow CloudFront access
-resource "aws_s3_bucket_policy" "frontend_cloudfront" {
-  bucket = module.s3_buckets["frontend"].bucket_name
+  custom_domain    = data.aws_ssm_parameter.cloudflare_domain.value
+  subdomain_prefix = local.config.frontend_domain
 
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [{
-      Sid       = "AllowCloudFrontServicePrincipal"
-      Effect    = "Allow"
-      Principal = {
-        Service = "cloudfront.amazonaws.com"
-      }
-      Action   = "s3:GetObject"
-      Resource = "${module.s3_buckets["frontend"].arn}/*"
-      Condition = {
-        StringEquals = {
-          "AWS:SourceArn" = module.cloudfront.distribution_arn
-        }
-      }
-    }]
-  })
+  common_tags = local.common_tags
 
-  depends_on = [module.cloudfront]
+  depends_on = [module.api_backend]
 }

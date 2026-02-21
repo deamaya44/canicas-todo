@@ -51,6 +51,7 @@ locals {
       type                = "LINUX_CONTAINER"
       privileged          = false
       artifacts_bucket_arn = module.s3_buckets["artifacts"].arn
+      amplify_app_arn     = module.amplify_frontend.app_arn
       tags                = merge(local.common_tags, { Component = "frontend" })
     }
   }
@@ -60,10 +61,6 @@ locals {
     artifacts = {
       name = "${local.project_name}-${local.environment}-artifacts-${data.aws_caller_identity.current.account_id}"
       tags = merge(local.common_tags, { Purpose = "artifacts" })
-    }
-    frontend = {
-      name = "${local.project_name}-${local.environment}-frontend-${data.aws_caller_identity.current.account_id}"
-      tags = merge(local.common_tags, { Purpose = "frontend-hosting" })
     }
   }
 }

@@ -4,32 +4,43 @@ phases:
   install:
     runtime-versions:
       nodejs: 18
-  
+    commands:
+      - echo "Installing Amplify CLI..."
+      - npm install -g @aws-amplify/cli
+      
   pre_build:
     commands:
-      - echo Installing dependencies...
-      - npm install
-  
+      - echo "Installing dependencies..."
+      - npm ci
+      
   build:
     commands:
-      - echo Build started on `date`
-      - echo Building React app...
-      - export VITE_API_URL=https://$API_DOMAIN
+      - echo "Building frontend..."
       - npm run build
-  
+      
   post_build:
     commands:
-      - echo Build completed on `date`
-      - echo Uploading to S3...
-      - aws s3 sync dist/ s3://$FRONTEND_BUCKET/ --delete
-      - echo Invalidating CloudFront cache...
-      - aws cloudfront create-invalidation --distribution-id $CLOUDFRONT_DIST_ID --paths "/*"
+      - echo "Deploying to Amplify..."
+      - |
+        cd dist
+        zip -r ../deploy.zip .
+        cd ..
+        aws amplify create-deployment \
+          --app-id $AMPLIFY_APP_ID \
+          --branch-name $BRANCH_NAME \
+          --region $AWS_REGION \
+          --query 'zipUploadUrl' \
+          --output text > upload_url.txt
+        curl -H "Content-Type: application/zip" \
+          --data-binary @deploy.zip \
+          $(cat upload_url.txt)
+        aws amplify start-deployment \
+          --app-id $AMPLIFY_APP_ID \
+          --branch-name $BRANCH_NAME \
+          --region $AWS_REGION
+      - echo "Deployment complete!"
 
 artifacts:
   files:
     - '**/*'
   base-directory: dist
-
-cache:
-  paths:
-    - 'node_modules/**/*'

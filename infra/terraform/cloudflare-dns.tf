@@ -1,14 +1,14 @@
-# Frontend: app.amxops.com (prod) or dev.amxops.com (dev) → CloudFront
+# Frontend: app.amxops.com (prod) or dev.amxops.com (dev) → Amplify
 resource "cloudflare_record" "frontend" {
   zone_id = data.aws_ssm_parameter.cloudflare_zone_id.value
   name    = local.config.frontend_domain
-  content = module.cloudfront.domain_name
+  content = module.amplify_frontend.default_domain
   type    = "CNAME"
   proxied = false
   ttl     = 1
-  comment = "${local.environment} Frontend CloudFront distribution"
+  comment = "${local.environment} Frontend Amplify Hosting"
 
-  depends_on = [module.cloudfront]
+  depends_on = [module.amplify_frontend]
 }
 
 # Backend API: api.amxops.com (prod) or api-dev.amxops.com (dev) → API Gateway Custom Domain

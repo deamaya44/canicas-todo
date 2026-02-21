@@ -15,8 +15,8 @@ variable "lambda_function_arn" {
   default     = ""
 }
 
-variable "cloudfront_distribution_arn" {
-  description = "CloudFront distribution ARN for frontend builds"
+variable "amplify_app_arn" {
+  description = "Amplify App ARN for frontend builds"
   type        = string
   default     = ""
 }
@@ -74,7 +74,7 @@ variable "artifacts_bucket_arn" {
 }
 
 variable "frontend_bucket_arn" {
-  description = "S3 bucket ARN for frontend hosting (optional)"
+  description = "S3 bucket ARN for frontend hosting (deprecated, kept for compatibility)"
   type        = string
   default     = ""
 }
