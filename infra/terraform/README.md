@@ -2,25 +2,15 @@
 
 ## Quick Start
 
-### Deploy Everything
+### Deploy Everything (from scratch)
 ```bash
 ./deploy.sh
 ```
-
-This will:
-1. Auto-import any existing resources
-2. Apply Terraform configuration
-3. Show outputs
 
 ### Destroy Everything
 ```bash
 ./destroy-all.sh
 ```
-
-This will:
-1. Run `terraform destroy`
-2. Clean up any orphaned resources
-3. Ensure complete cleanup
 
 ## Manual Operations
 
@@ -39,16 +29,16 @@ terraform plan
 terraform apply -auto-approve
 ```
 
-### Import Existing Resources
+### Destroy
 ```bash
-./auto-import.sh
+terraform destroy -auto-approve
 ```
 
 ## Requirements
 
-- AWS CLI configured with profile
+- AWS CLI configured
 - Terraform installed
-- SSM parameters configured (see main README)
+- SSM parameters configured
 
 ## Environment Variables
 
@@ -59,10 +49,9 @@ export AWS_REGION=us-east-1
 
 ## Files
 
-- `deploy.sh` - Full deployment with auto-import
-- `destroy-all.sh` - Complete destruction and cleanup
-- `auto-import.sh` - Import existing resources
+- `deploy.sh` - Deploy from scratch
+- `destroy-all.sh` - Complete cleanup
 - `main.tf` - Module calls
 - `locals.tf` - All configuration
-- `providers.tf` - Provider configuration
-- `outputs.tf` - Output values
+- `providers.tf` - Providers
+- `outputs.tf` - Outputs
