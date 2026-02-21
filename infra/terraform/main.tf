@@ -81,7 +81,6 @@ module "api_backend" {
   source = "./modules/api-backend"
 
   project_name         = local.project_name
-  lambda_zip_path      = "${path.module}/lambda-placeholder.zip"
   environment          = local.environment
   custom_domain_name   = "${local.config.api_domain}.${data.aws_ssm_parameter.cloudflare_domain.value}"
   acm_certificate_arn  = aws_acm_certificate_validation.backend.certificate_arn

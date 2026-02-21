@@ -3,6 +3,7 @@ resource "aws_dynamodb_table" "tasks" {
   name           = "${var.project_name}-${var.environment}-tasks"
   billing_mode   = "PAY_PER_REQUEST"
   hash_key       = "id"
+  deletion_protection_enabled = false
 
   attribute {
     name = "id"
@@ -79,13 +80,35 @@ resource "aws_iam_role_policy" "lambda" {
   })
 }
 
+# Package backend with dependencies
+resource "null_resource" "backend_package" {
+  triggers = {
+    code_hash    = filemd5("${path.root}/../../backend/index.js")
+    package_hash = filemd5("${path.root}/../../backend/package.json")
+  }
+
+  provisioner "local-exec" {
+    command     = "./package.sh"
+    working_dir = "${path.root}/../../backend"
+  }
+}
+
+data "archive_file" "backend" {
+  type        = "zip"
+  source_dir  = "${path.root}/../../backend"
+  output_path = "${path.root}/../../backend.zip"
+  excludes    = [".git", ".gitignore", "package.sh"]
+
+  depends_on = [null_resource.backend_package]
+}
+
 # Lambda Function
 resource "aws_lambda_function" "tasks" {
-  filename         = var.lambda_zip_path
+  filename         = data.archive_file.backend.output_path
   function_name    = "${var.project_name}-${var.environment}-tasks"
   role            = aws_iam_role.lambda.arn
   handler         = "index.handler"
-  source_code_hash = fileexists(var.lambda_zip_path) ? filebase64sha256(var.lambda_zip_path) : ""
+  source_code_hash = data.archive_file.backend.output_base64sha256
   runtime         = "nodejs18.x"
   timeout         = 30
   memory_size     = 256

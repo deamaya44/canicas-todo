@@ -3,12 +3,6 @@ variable "project_name" {
   type        = string
 }
 
-variable "lambda_zip_path" {
-  description = "Path to Lambda deployment package"
-  type        = string
-  default     = "lambda.zip"
-}
-
 variable "allowed_origins" {
   description = "Allowed CORS origins"
   type        = list(string)
