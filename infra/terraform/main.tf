@@ -95,7 +95,7 @@ module "api_backend" {
 }
 
 module "amplify_frontend" {
-  source = "git::https://github.com/deamaya44/aws_modules.git//modules/amplify?ref=main"
+  source = "./modules/amplify"
 
   app_name    = "${local.project_name}-${local.environment}"
   branch_name = "main"
