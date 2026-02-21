@@ -1,0 +1,28 @@
+[core]
+	repositoryformatversion = 0
+	filemode = true
+	bare = false
+	logallrefupdates = true
+[remote "origin"]
+	url = git@github.com:deamaya44/canicas-todo.git
+	fetch = +refs/heads/*:refs/remotes/origin/*
+[branch "main"]
+	remote = origin
+	merge = refs/heads/main
+	gk-last-accessed = 2026-02-08T01:27:04.518Z
+	gk-last-modified = 2026-02-08T01:27:04.518Z
+[remote "codecommit-backend"]
+	url = codecommit::us-east-1://tasks-3d-backend
+	fetch = +refs/heads/*:refs/remotes/codecommit-backend/*
+[remote "codecommit-frontend"]
+	url = codecommit::us-east-1://tasks-3d-frontend
+	fetch = +refs/heads/*:refs/remotes/codecommit-frontend/*
+[branch "dev"]
+	gk-last-accessed = 2026-02-08T05:24:51.459Z
+	gk-last-modified = 2026-02-08T05:24:51.459Z
+[remote "codecommit-backend-dev"]
+	url = codecommit::us-east-1://tasks-3d-dev-backend
+	fetch = +refs/heads/*:refs/remotes/codecommit-backend-dev/*
+[remote "codecommit-frontend-dev"]
+	url = codecommit::us-east-1://tasks-3d-dev-frontend
+	fetch = +refs/heads/*:refs/remotes/codecommit-frontend-dev/*

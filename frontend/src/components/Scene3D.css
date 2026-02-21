@@ -1,0 +1,34 @@
+.scene-container {
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  top: 0;
+  left: 0;
+}
+
+.task-tooltip {
+  position: fixed;
+  padding: 8px 12px;
+  background: rgba(0, 0, 0, 0.9);
+  color: #00ffff;
+  border: 1px solid rgba(0, 255, 255, 0.5);
+  border-radius: 6px;
+  font-size: 14px;
+  font-family: 'Courier New', monospace;
+  pointer-events: none;
+  z-index: 1000;
+  white-space: nowrap;
+  box-shadow: 0 4px 12px rgba(0, 255, 255, 0.3);
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

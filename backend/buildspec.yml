@@ -1,0 +1,36 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 18
+  
+  pre_build:
+    commands:
+      - echo Installing dependencies...
+      - npm install --production
+  
+  build:
+    commands:
+      - echo Build started on `date`
+      - echo Packaging Lambda function...
+      - zip -r lambda.zip . -x "*.git*" "node_modules/.cache/*"
+      - echo Uploading to S3...
+      - aws s3 cp lambda.zip s3://$ARTIFACTS_BUCKET/backend/lambda.zip
+      - echo Updating Lambda function...
+      - aws lambda update-function-code --function-name $LAMBDA_FUNCTION_NAME --s3-bucket $ARTIFACTS_BUCKET --s3-key backend/lambda.zip --region $AWS_REGION
+  
+  post_build:
+    commands:
+      - echo Build completed on `date`
+
+artifacts:
+  files:
+    - '**/*'
+  exclude-paths:
+    - node_modules/.cache/**/*
+    - .git/**/*
+
+cache:
+  paths:
+    - 'node_modules/**/*'

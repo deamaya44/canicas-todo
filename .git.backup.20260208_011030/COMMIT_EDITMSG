@@ -1,0 +1,12 @@
+feat: add script to clean Git history
+
+Adds interactive script to remove all Git history and create
+a clean repository with a single commit.
+
+Usage: ./scripts/clean-git-history.sh
+
+Features:
+- Creates backup before cleaning
+- Requires explicit confirmation
+- Provides instructions for force push
+- Shows how to restore if needed
