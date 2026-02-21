@@ -94,11 +94,9 @@ module "lambda" {
     )
   }
 
-  depends_on = [
-    module.local_exec
-  ]
-
   common_tags = merge(local.common_tags, { Name = each.key })
+
+  depends_on = [module.local_exec, module.iam_role_lambda, module.dynamodb]
 }
 
 # ACM Certificates
@@ -172,7 +170,7 @@ module "apigateway" {
 
   common_tags = merge(local.common_tags, { Name = each.key })
 
-  depends_on = [aws_acm_certificate_validation.this]
+  depends_on = [aws_acm_certificate_validation.this, module.lambda]
 }
 
 # Lambda Permissions
@@ -184,6 +182,8 @@ resource "aws_lambda_permission" "api_gateway" {
   function_name = module.lambda[each.key].function_name
   principal     = "apigateway.amazonaws.com"
   source_arn    = "${module.apigateway["main"].execution_arn}/*/*"
+
+  depends_on = [module.lambda, module.apigateway]
 }
 
 # Cloudflare DNS Records
@@ -244,7 +244,7 @@ module "codebuild" {
     VITE_FIREBASE_APP_ID              = data.aws_ssm_parameter.firebase_app_id.value
   }
 
-  depends_on = [module.codecommit, module.s3_buckets, module.amplify]
+  depends_on = [module.codecommit, module.s3_buckets, module.lambda, module.amplify]
 }
 
 # CodePipeline
