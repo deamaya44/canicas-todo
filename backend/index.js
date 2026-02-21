@@ -7,6 +7,19 @@ exports.handler = async (event) => {
   const path = event.requestContext?.http?.path || event.path;
   const pathParameters = event.pathParameters || {};
 
+  // Handle CORS preflight
+  if (method === 'OPTIONS') {
+    return {
+      statusCode: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Headers': 'Content-Type,Authorization',
+        'Access-Control-Allow-Methods': 'GET,POST,PUT,DELETE,OPTIONS'
+      },
+      body: ''
+    };
+  }
+
   try {
     // Route handling
     if (path === '/tasks' && method === 'GET') {

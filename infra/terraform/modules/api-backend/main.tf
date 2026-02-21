@@ -266,6 +266,23 @@ resource "aws_apigatewayv2_route" "delete_task" {
   authorizer_id      = aws_apigatewayv2_authorizer.firebase.id
 }
 
+# CORS preflight routes (no authorization required)
+resource "aws_apigatewayv2_route" "options_tasks" {
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "OPTIONS /tasks"
+  target    = "integrations/${aws_apigatewayv2_integration.tasks.id}"
+  
+  authorization_type = "NONE"
+}
+
+resource "aws_apigatewayv2_route" "options_tasks_id" {
+  api_id    = aws_apigatewayv2_api.this.id
+  route_key = "OPTIONS /tasks/{id}"
+  target    = "integrations/${aws_apigatewayv2_integration.tasks.id}"
+  
+  authorization_type = "NONE"
+}
+
 # Custom Domain Name
 resource "aws_apigatewayv2_domain_name" "this" {
   count       = var.custom_domain_name != "" ? 1 : 0
