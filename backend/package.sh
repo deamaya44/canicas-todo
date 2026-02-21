@@ -1,21 +1,22 @@
 #!/bin/bash
 set -e
-SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-cd "$SCRIPT_DIR"
 
-if [ -d "/tmp/node-v18.20.5-linux-x64/bin" ]; then
-    export PATH="/tmp/node-v18.20.5-linux-x64/bin:$PATH"
-fi
+cd "$(dirname "$0")"
 
 if ! command -v npm &> /dev/null; then
     echo "Error: npm not found in PATH"
     exit 1
 fi
 
-rm -rf node_modules package-lock.json
-npm install --production --no-package-lock
-cd ..
-rm -f backend.zip
-cd backend
-zip -r ../backend.zip . -x "*.git*"
+if ! command -v zip &> /dev/null; then
+    echo "Error: zip not found in PATH"
+    exit 1
+fi
+
+echo "Installing dependencies..."
+npm install --production
+
+echo "Creating deployment package..."
+zip -r ../infra/terraform/backend.zip . -x "*.git*" "*.sh" "node_modules/.cache/*" "scripts/*" "server.js"
+
 echo "✅ Backend packaged successfully"

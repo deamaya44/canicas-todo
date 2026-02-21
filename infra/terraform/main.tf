@@ -1,3 +1,13 @@
+# Null Resources for packaging
+module "local_exec" {
+  source   = "git::https://github.com/deamaya44/aws_modules.git//modules/provisioners/local_exec?ref=main"
+  for_each = local.null_resources
+
+  triggers    = each.value.triggers
+  command     = each.value.command
+  working_dir = try(each.value.working_dir, null)
+}
+
 # CodeCommit Repositories
 module "codecommit" {
   source   = "git::https://github.com/deamaya44/aws_modules.git//modules/codecommit?ref=main"
@@ -83,6 +93,10 @@ module "lambda" {
       v
     )
   }
+
+  depends_on = [
+    module.local_exec
+  ]
 
   common_tags = merge(local.common_tags, { Name = each.key })
 }

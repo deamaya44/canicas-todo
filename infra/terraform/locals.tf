@@ -94,6 +94,17 @@ locals {
     }
   }
 
+  # Null resources for packaging
+  null_resources = {
+    package_authorizer = {
+      triggers = {
+        code_hash = filemd5("${path.root}/lambda-authorizer/index.js")
+      }
+      command     = "bash package.sh"
+      working_dir = "${path.root}/lambda-authorizer"
+    }
+  }
+
   # Lambda functions configuration
   lambda_functions = {
     backend = {
@@ -123,6 +134,7 @@ locals {
         FIREBASE_PROJECT_ID = "firebase_project_id"  # Reference to SSM
         ALLOWED_ORIGINS     = "frontend_domain"      # Reference to config
       }
+      depends_on_null = "package_authorizer"
     }
   }
 
