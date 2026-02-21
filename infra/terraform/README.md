@@ -1,64 +1,68 @@
-# Infrastructure
-
-Terraform configuration for AWS resources.
+# Terraform Infrastructure
 
 ## Quick Start
 
+### Deploy Everything
 ```bash
-cd infra/terraform
+./deploy.sh
+```
 
-# Initialize
+This will:
+1. Auto-import any existing resources
+2. Apply Terraform configuration
+3. Show outputs
+
+### Destroy Everything
+```bash
+./destroy-all.sh
+```
+
+This will:
+1. Run `terraform destroy`
+2. Clean up any orphaned resources
+3. Ensure complete cleanup
+
+## Manual Operations
+
+### Initialize
+```bash
 terraform init
-
-# Deploy production
-terraform apply -var-file="terraform.tfvars"
-
-# Deploy development
-terraform apply -var-file="terraform.dev.tfvars"
 ```
 
-## Configuration
-
-Create `terraform.tfvars`:
-
-```hcl
-project_name = "tasks-3d"
-environment  = "prod"
-aws_region   = "us-east-1"
-owner        = "your-name"
-
-notification_emails = [
-  "your-email@example.com"
-]
+### Plan
+```bash
+terraform plan
 ```
 
-## Resources Created
+### Apply
+```bash
+terraform apply -auto-approve
+```
 
-- **S3** - Frontend hosting
-- **CloudFront** - CDN with OAC
-- **Lambda** - Backend API
-- **API Gateway** - REST API with custom domain
-- **DynamoDB** - Task storage
-- **CodePipeline** - CI/CD
-- **CodeBuild** - Build projects
-- **ACM** - SSL certificates
-- **Cloudflare DNS** - Domain records (optional)
+### Import Existing Resources
+```bash
+./auto-import.sh
+```
 
-## Secrets
+## Requirements
 
-Store Cloudflare API token (if using custom domain):
+- AWS CLI configured with profile
+- Terraform installed
+- SSM parameters configured (see main README)
+
+## Environment Variables
 
 ```bash
-aws ssm put-parameter \
-  --name "/tasks-3d/cloudflare/api_token" \
-  --value "your-token" \
-  --type SecureString \
-  --region us-east-1
+export AWS_PROFILE=your-profile
+export AWS_REGION=us-east-1
 ```
 
-## Deployment Script
+## Files
 
-```bash
-./deploy.sh prod    # Production
-./deploy.sh dev     # Development
-```
+- `deploy.sh` - Full deployment with auto-import
+- `destroy-all.sh` - Complete destruction and cleanup
+- `auto-import.sh` - Import existing resources
+- `main.tf` - Module calls
+- `locals.tf` - All configuration
+- `providers.tf` - Provider configuration
+- `outputs.tf` - Output values

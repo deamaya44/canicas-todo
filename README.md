@@ -28,7 +28,7 @@ A modern task management application with a 3D physics-based interface built wit
 
 **56 AWS Resources Deployed via Terraform:**
 
-- **Frontend:** Amplify App + CloudFront + Custom Domain
+- **Frontend:** Amplify App + Custom Domain + SSL
 - **Backend:** API Gateway HTTP + Lambda Functions + DynamoDB
 - **Security:** Firebase JWT Authorizer + IAM Roles + ACM Certificates
 - **CI/CD:** CodeCommit + CodeBuild + CodePipeline + EventBridge

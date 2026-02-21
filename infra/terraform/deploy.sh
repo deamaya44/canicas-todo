@@ -1,51 +1,25 @@
 #!/bin/bash
-
-# Terraform Workspace Deployment Script
-# Usage: ./deploy.sh [dev|prod] [plan|apply|destroy]
-
 set -e
 
-ENVIRONMENT=${1:-prod}
-ACTION=${2:-plan}
+PROFILE="${AWS_PROFILE:-default}"
+REGION="${AWS_REGION:-us-east-1}"
 
-echo "🚀 Deploying to: $ENVIRONMENT"
-echo "📋 Action: $ACTION"
+cd "$(dirname "$0")"
+
+echo "🚀 Deploying infrastructure..."
+
+# Step 1: Auto-import existing resources
 echo ""
+echo "📦 Step 1: Checking for existing resources..."
+./auto-import.sh
 
-# Initialize if needed
-if [ ! -d ".terraform" ]; then
-  echo "📦 Initializing Terraform..."
-  terraform init
-fi
-
-# Create workspace if it doesn't exist
-if ! terraform workspace list | grep -q "$ENVIRONMENT"; then
-  echo "🌳 Creating workspace: $ENVIRONMENT"
-  terraform workspace new "$ENVIRONMENT"
-else
-  echo "🌳 Switching to workspace: $ENVIRONMENT"
-  terraform workspace select "$ENVIRONMENT"
-fi
-
-# Show current workspace
+# Step 2: Apply terraform
 echo ""
-echo "✅ Current workspace: $(terraform workspace show)"
-echo ""
+echo "🏗️  Step 2: Applying Terraform configuration..."
+terraform apply -auto-approve
 
-# Execute action
-case $ACTION in
-  plan)
-    terraform plan
-    ;;
-  apply)
-    terraform apply
-    ;;
-  destroy)
-    terraform destroy
-    ;;
-  *)
-    echo "❌ Invalid action: $ACTION"
-    echo "Valid actions: plan, apply, destroy"
-    exit 1
-    ;;
-esac
+echo ""
+echo "✅ Deployment complete!"
+echo ""
+echo "📋 Outputs:"
+terraform output
