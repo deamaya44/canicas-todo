@@ -99,6 +99,7 @@ locals {
     package_authorizer = {
       triggers = {
         code_hash = filemd5("${path.root}/lambda-authorizer/index.js")
+        package_hash = filemd5("${path.root}/lambda-authorizer/package.json")
       }
       command     = "bash package.sh"
       working_dir = "${path.root}/lambda-authorizer"

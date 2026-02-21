@@ -80,7 +80,7 @@ module "lambda" {
   function_name = each.value.function_name
   handler       = each.value.handler
   runtime       = each.value.runtime
-  filename      = each.value.filename
+  filename      = each.key == "authorizer" ? "${path.root}/lambda-authorizer.zip" : each.value.filename
   role_arn      = module.iam_role_lambda[each.key].role_arn
   timeout       = each.value.timeout
   memory_size   = try(each.value.memory_size, 128)
@@ -96,7 +96,11 @@ module "lambda" {
 
   common_tags = merge(local.common_tags, { Name = each.key })
 
-  depends_on = [module.local_exec, module.iam_role_lambda, module.dynamodb]
+  depends_on = [
+    module.local_exec,
+    module.iam_role_lambda,
+    module.dynamodb
+  ]
 }
 
 # ACM Certificates
